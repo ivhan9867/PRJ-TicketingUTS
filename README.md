@@ -12,6 +12,7 @@ Aplikasi tiket perjalanan sederhana mirip Traveloka. **1176 tiket** dari 8 kateg
 | `data_manual.json` | Data tulisan tangan (kapal, hiburan, kereta dan bus internasional) yang dibaca `buat_data.py`. |
 | `data.json` | Data tiket (hasil `buat_data.py`) |
 | `data.js` | Salinan identik `data.json` agar halaman bisa dibuka dengan klik dua kali. Dibuat otomatis oleh `buat_data.py`, jangan diedit tangan. |
+| `lab.html` | Panggung Algoritma: visualisasi sorting dan searching beserta log yang tersinkron |
 | `tiket.c` | Versi C: struct, array, pointer, linked list, sorting, searching |
 
 ## Struktur repo
@@ -48,6 +49,7 @@ Setelah di-push: **Settings → Pages → Source: Deploy from a branch → Branc
 | **Searching** | fungsi `searchRun` (baris 170) | Linear Search (teks), Binary Search harga (batas bawah), Binary Search nama (awalan). Form Dari/Ke (`runForm`) memakai Linear Search. Pemindaian dan batas bawah dipakai bersama lewat fungsi bantu `linearScan` dan `lowerBound`. |
 | **Log** | fungsi `pushLog` (baris 77) dan `aLog` (baris 383) | Setiap tindakan menulis log baru yang menggantikan yang lama. |
 | **Animasi** | fungsi `anim` (baris 385) | Pemutar frame untuk sorting dan searching. |
+| **Panggung Algoritma** | `lab.html` | Halaman khusus untuk melihat sorting (Bubble, Selection, Insertion, Quick) dan searching (Linear, Binary) pada tiket asli. Batang bergeser mulus, baris log muncul sinkron dengan animasi, ada kontrol putar, jeda, langkah, dan kecepatan, serta inspektur `*ptr[a]` dan `*ptr[b]` yang menunjukkan struct dan alamatnya. Dibuka lewat tombol *Panggung* di header. |
 | **Total harga** | fungsi `calc` (baris 363) | Tarif x penumpang x (2 bila pulang-pergi). Hotel: tarif x malam x kamar. |
 | **Denah kursi** | `LAY` dan fungsi `seatMap` (baris 372) | Pesawat 3-3, kereta 2-2, bus 2-1. Kursi pergi dan pulang terpisah. |
 | **E-tiket** | fungsi `showTicket` (baris 459) | Tiket per pesanan dengan barcode dari kode booking dan tombol cetak. |
@@ -113,31 +115,12 @@ Jelajah (kategori, filter, form Dari/Ke/Tanggal) -> Detail (sekali jalan atau pu
 - **Kompatibilitas:** diuji di Chromium (desktop, HP, tablet, mode gelap). Firefox dan Safari belum diuji. Fitur CSS baru (`color-mix`) punya warna cadangan untuk browser lama, dan pergeseran konten saat panel log terbuka memakai JavaScript, bukan `:has()`.
 - **Aksesibilitas:** panel log diumumkan ke pembaca layar (`role=log`), fokus keyboard terkunci di dalam modal, dan animasi disembunyikan dari pembaca layar.
 
-## Pembaruan tampilan (V2)
-Semua tambahan visual ada di **akhir** `style.css` dan `app.js` (blok berkomentar `V2`), jadi nomor baris pada tabel pemetaan tugas di atas tidak berubah dan logika sorting, searching, pointer, linked list tidak disentuh.
-- **Hero:** blob aurora yang melayang, pesawat terbang di jalur putus-putus, kartu statistik yang membesar saat di-hover.
-- **Navigasi:** pil penanda yang bergeser halus antar tab, titik logo memantul, bar progres scroll (browser Chromium).
-- **Kartu tiket:** potongan tiket di sisi garis putus-putus, cahaya yang mengikuti kursor, kilau pada tombol.
-- **Panel Log:** garis aksen bergerak, indikator live berdenyut, kartu masuk dari bawah, baris langkah muncul berurutan, angka statistik menghitung naik, log tindakan biasa tampil sebagai linimasa, bar progres untuk animasi sorting/searching, batang bergradasi dengan glow.
-- Semua animasi baru ikut mati bila sistem meminta *kurangi gerakan*.
+## Gambar sampul kartu
 
-### V2.1: kontrol animasi dan penjelasan algoritma
-- **Pemutar animasi:** tombol jeda/putar, langkah mundur dan maju, slider posisi, dan pilihan kecepatan (Cepat, Normal, Lambat, Pelan) di panel Log. Berlaku untuk animasi sorting dan searching.
-- **Pseudocode menyala:** tombol `{ }` menampilkan pseudocode algoritma yang sedang berjalan. Baris yang menyala mengikuti aksi pada tahap animasi saat ini (misalnya baris *tukar* pada Bubble Sort, atau *simpan ke hasil* pada Linear Search). Terbuka otomatis di layar lebar.
-- **Grafik perbandingan:** tombol *Bandingkan semua* kini menampilkan bar chart animasi untuk jumlah perbandingan dan waktu, dengan penanda bintang pada yang terkecil. Tabel aslinya tetap ada di bawah grafik.
-- Kode baru ada di blok `V2` pada akhir `app.js` (bagian 3 dan 5) dan akhir `style.css`; kode tugas di atasnya tidak diubah.
+Folder `img/` berisi 25 gambar JPG, sudah di-crop ke rasio 16:7 dan dikompres (total sekitar 830 KB). Tiap jenis punya beberapa variasi yang dipilih dari id tiket, supaya kartu tidak monoton. Tiket merek tertentu memakai gambar yang cocok (Garuda, Whoosh, KRL Commuter).
 
-### V2.2: fitur presentasi
-- **Demo otomatis** (tombol *Demo* di header): menjalankan skenario kategori, Merge Sort, Linear Search, detail tiket, pilih kursi, bayar, linked list, dan pointer, lengkap dengan narasi per langkah. Pesanan demo (a.n. *Demo Presentasi*) dihapus otomatis di akhir atau saat dihentikan. `Esc` menghentikan demo.
-- **Tombol Memori** di tiap kartu: membuka tab Konsep Data, menggeser `ptr` ke struct tiket itu, dan menyapu peta memori field demi field.
-- **Animasi linked list:** node pesanan baru terbang masuk sebagai head, dan node yang dibatalkan terlepas lalu rantai tersambung ulang.
-- **Peta rute mini** di jendela pemesanan (untuk tiket yang punya asal dan tujuan), dengan pesawat yang bergerak di jalur lengkung.
-- **Mode gelap manual** (ikon bulan/matahari), pilihan disimpan di `localStorage`.
-- **Command palette** (`Ctrl+K` atau `Cmd+K`, atau ikon kaca pembesar): lompat ke kategori, metode sorting/searching, urutan, halaman, bandingkan algoritma, demo, dan tema.
-- **Boarding pass 3D:** e-tiket bisa dibalik (ketuk kartu atau tombol *Balik*) untuk melihat barcode di sisi belakang.
-- Semua kode baru ada di akhir `app.js` dan `style.css` (blok V2); kode tugas di atasnya tidak diubah.
+Menambah gambar: simpan dengan pola `jenis-nomor.jpg` (mis. `bus-4.jpg`), lalu naikkan angkanya di `IMGN` pada `app.js`. Sebutkan sumber gambar di laporan.
 
-### V2.3: Sorting Race, padanan kode C, font lokal
-- **Sorting Race** (tombol di panel Log > *Atur metode*, atau `Ctrl+K` lalu ketik "race"): dua algoritma mengurutkan data yang sama berdampingan. Yang dijalankan adalah `SORT[...]` asli dari `app.js`, dan balapan memakai jam bersama berdasarkan jumlah operasi (perbandingan + pertukaran/penulisan), bukan milidetik, supaya adil. Bisa memilih data acak, hampir terurut, atau terbalik.
-- **Padanan kode C** (tab *Konsep Data*, bagian bawah): potongan `tiket.c` untuk struct, pointer, Bubble Sort, Linear Search, Binary Search, dan linked list, disandingkan dengan padanan di web beserta tombol untuk menjalankannya. Potongan kode adalah **salinan** dari `tiket.c` yang tertanam di `app.js` (konstanta `CSRC`); kalau kamu mengubah `tiket.c`, perbarui juga salinannya di sana.
-- **Font offline:** aturan `@font-face` dan CSP sudah disiapkan. Untuk benar-benar offline, ikuti langkah di `fonts/README.md` (unduh satu file `.woff2`).
+## Tiket tersimpan
+
+Tombol ♥ pada kartu menyimpan id tiket ke array `FAV[]` (disimpan di `localStorage`). Tab **Tersimpan** menampilkan isinya, dan setiap tindakan tercatat di panel Log.

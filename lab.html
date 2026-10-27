@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Panggung Algoritma · Pesanin</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#0b1017;--pan:#121a25;--line:#223044;--ink:#e8e4d8;--mut:#8593a6;--amb:#ffb62e;--grn:#35d49a;--red:#ff6b57;--blu:#6aa8ff;--vio:#b58bff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}[hidden]{display:none!important}html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Barlow,system-ui,sans-serif;display:flex;flex-direction:column;gap:12px;padding:16px 20px}
+.top{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap}
+.top a{color:var(--mut);text-decoration:none}.top a:hover{color:var(--ink)}
+h1{font:700 30px/1 "Barlow Condensed",sans-serif;margin:0;letter-spacing:.02em}
+.top p{margin:0;color:var(--mut)}
+.ctl{display:flex;gap:10px;flex-wrap:wrap;align-items:end;background:var(--pan);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.ctl label{display:flex;flex-direction:column;gap:3px;color:var(--mut);font-size:12px}
+select,input[type=text]{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 9px}
+input[type=text]{width:130px}input[type=range]{accent-color:#ffb62e}label output{color:var(--amb);font-weight:600;margin-left:4px}
+button{font:inherit;font-weight:600;color:var(--ink);background:var(--pan);border:1px solid var(--line);border-radius:6px;padding:8px 14px;cursor:pointer}
+button:hover{border-color:var(--mut)}button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--amb);outline-offset:2px}
+button.go{background:var(--amb);color:#1a1200;border-color:var(--amb)}
+.stage{flex:1;min-height:360px;display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:12px}
+.cv{position:relative;background:var(--pan);border:1px solid var(--line);border-radius:10px;min-height:340px}
+canvas{position:absolute;inset:0;width:100%;height:100%}
+.hud{position:absolute;left:16px;top:10px;display:flex;gap:26px;pointer-events:none}
+.hud div{display:flex;flex-direction:column}
+.hud b{font:700 34px/1 "Barlow Condensed",sans-serif;color:var(--amb);font-variant-numeric:tabular-nums}
+.hud span{font-size:12px;color:var(--mut)}
+.note{position:absolute;right:16px;top:14px;max-width:40%;text-align:right;color:var(--mut);font-size:13px;pointer-events:none}
+.board{display:flex;flex-direction:column;background:var(--pan);border:1px solid var(--line);border-radius:10px;min-height:0;overflow:hidden}
+.bh{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line)}
+.bh b{font:600 18px "Barlow Condensed",sans-serif;letter-spacing:.04em}
+.bh button{padding:4px 10px;font-size:13px}
+#rows{flex:1;padding:6px 0;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end}
+.r{display:flex;gap:10px;padding:5px 12px;white-space:nowrap;color:var(--mut);font-variant-numeric:tabular-nums;border-left:3px solid transparent}
+.r i{font-style:normal;opacity:.55;min-width:30px}.r span{overflow:hidden;text-overflow:ellipsis}
+.r.swap{color:var(--red)}.r.hit,.r.end,.r.pass{color:var(--grn)}.r.bin,.r.scan{color:var(--ink)}
+.r.now{background:#1a2535;color:var(--ink);border-left-color:var(--amb);animation:tick .25s ease-out}
+.r.now.swap{border-left-color:var(--red)}.r.now.hit,.r.now.end{border-left-color:var(--grn)}
+@keyframes tick{from{transform:translateY(8px);opacity:.3}}
+.insp{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px 12px;border-top:1px solid var(--line);min-height:104px}
+.st{font-size:13px;color:var(--mut);display:flex;flex-direction:column}
+.st b{color:var(--vio);font-weight:600}.st em{font-style:normal;color:var(--ink)}
+.tr{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tr input[type=range]{flex:1;min-width:160px;accent-color:#ffb62e}
+@media(max-width:900px){.stage{grid-template-columns:1fr}.cv{height:420px}.board{height:380px}body{height:auto}}
+@media(prefers-reduced-motion:reduce){.r.now{animation:none}}
+</style>
+</head>
+<body>
+<header class="top"><a href="index.html">‹ Kembali ke Pesanin</a><h1>Panggung Algoritma</h1><p>Sorting dan searching pada tiket asli, langkah demi langkah.</p></header>
+<section class="ctl">
+<label>Metode<select id="mode"><optgroup label="Sorting"><option value="bubble">Bubble Sort</option><option value="selection">Selection Sort</option><option value="insertion">Insertion Sort</option><option value="quick">Quick Sort</option></optgroup><optgroup label="Searching"><option value="linear">Linear Search</option><option value="binary">Binary Search</option></optgroup></select></label>
+<label class="so">Urut menurut<select id="key"><option value="harga">Harga</option><option value="rating">Rating</option><option value="durasi">Durasi</option></select></label>
+<label class="so">Arah<select id="dir"><option value="1">Naik</option><option value="-1">Turun</option></select></label>
+<label class="se" hidden>Harga dicari (atau klik batang)<input type="text" id="tp" inputmode="numeric" placeholder="kosong = acak"></label>
+<label><span>Jumlah tiket: <output id="no">18</output></span><input type="range" id="n" min="8" max="40" value="18" style="height:34px"></label>
+<button id="shuf">Acak data</button><button class="go" id="go">Jalankan</button>
+</section>
+<main class="stage">
+<div class="cv"><canvas id="cv"></canvas><div class="hud" id="hud"></div><div class="note" id="note"></div></div>
+<aside class="board"><div class="bh"><b>Papan log</b><button id="cp">Salin semua log</button></div><div id="rows" role="log" aria-live="polite"></div><div class="insp" id="insp"></div></aside>
+</main>
+<footer class="tr"><button id="b0" aria-label="Ke awal">⏮</button><button id="bp" aria-label="Langkah mundur">◀</button><button id="pl" class="go" style="min-width:84px">Putar</button><button id="bn" aria-label="Langkah maju">▶</button><button id="b1" aria-label="Ke akhir">⏭</button><input type="range" id="sc" min="0" max="0" value="0" aria-label="Posisi langkah"><select id="sp" aria-label="Kecepatan"><option value=".5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option><option value="10">10×</option></select></footer>
+<script src="data.js"></script>
+<script>
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[<>&"]/g,c=>'&#'+c.charCodeAt(0)+';');
+/* STRUCT: satu baris data = satu record Tiket */
+const T=RAW.baris.map((r,i)=>({id:i,tipe:r[0],nama:r[2],asal:r[3],tujuan:r[4],harga:r[5],durasi:r[6],rating:r[7]}));
+const POOL=T.filter(t=>['pesawat','kereta','bus'].includes(t.tipe)&&t.tujuan);
+const rp=n=>'Rp'+n.toLocaleString('id-ID'),short=p=>p>=1e6?(p/1e6).toFixed(1).replace('.',',')+'jt':Math.round(p/1e3)+'rb';
+const NAMA={bubble:'Bubble Sort',selection:'Selection Sort',insertion:'Insertion Sort',quick:'Quick Sort',linear:'Linear Search',binary:'Binary Search'};
+const BIGO={bubble:'O(n²)',selection:'O(n²)',insertion:'O(n²), mendekati O(n) bila hampir terurut',quick:'O(n log n) rata-rata',linear:'O(n)',binary:'O(log n), data harus terurut'};
+const RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+let seed=11;const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
+/* ARRAY: data[] berisi referensi (pointer) ke struct; yang ditukar hanya referensinya */
+let data=[],frames=[],fi=0,timer=0,playing=false,tp0=0,bx={};
+const byId=id=>T[id];
+function sample(){const p=[...POOL],out=[],n=+$('n').value;while(out.length<n)out.push(p.splice(Math.floor(rnd()*p.length),1)[0]);data=out;frames=[];fi=0;bx={};stop();show()}
+function mkSort(alg,key,dir){
+  const a=[...data],n=a.length,d=new Uint8Array(n),F=[];let c=0,s=0;
+  const v=t=>key=='harga'?rp(t.harga):key=='rating'?'★'+t.rating:t.durasi+' mnt',sv=t=>key=='harga'?short(t.harga):v(t);
+  const snap=(k,i,j,t,pv)=>F.push({o:a.map(x=>x.id),k,a:i,b:j,pv:pv==null?-1:pv,d:d.slice(),c,s,t});
+  const lt=(i,j,pv)=>{c++;const r=(a[i][key]-a[j][key])*dir<0;snap('cmp',i,j,`banding [${i}] ${sv(a[i])} ${dir>0?'<':'>'} [${j}] ${sv(a[j])} ? ${r?'ya':'tidak'}`,pv);return r};
+  const sw=(i,j,pv)=>{[a[i],a[j]]=[a[j],a[i]];s++;snap('swap',i,j,`tukar [${i}] ⇄ [${j}]`,pv)};
+  snap('init',-1,-1,`mulai ${NAMA[alg]} · ${n} tiket · ${key} ${dir>0?'naik':'turun'}`);
+  if(alg=='bubble')for(let i=0;i<n-1;i++){let f=0;for(let j=0;j<n-1-i;j++)if(lt(j+1,j)){sw(j,j+1);f=1}d[n-1-i]=1;snap('pass',-1,-1,`pass ${i+1} selesai · [${n-1-i}] sudah final`);if(!f){snap('pass',-1,-1,'tidak ada pertukaran, berhenti lebih awal');break}}
+  else if(alg=='selection')for(let i=0;i<n-1;i++){let m=i;for(let j=i+1;j<n;j++)if(lt(j,m))m=j;if(m!=i)sw(i,m);d[i]=1;snap('pass',-1,-1,`putaran ${i+1} · [${i}] sudah final`)}
+  else if(alg=='insertion')for(let i=1;i<n;i++){let j=i;while(j>0&&lt(j,j-1)){sw(j,j-1);j--}snap('pass',-1,-1,`tiket ke-${i} disisipkan di [${j}]`)}
+  else{const qs=(lo,hi)=>{if(lo>hi)return;if(lo==hi){d[lo]=1;return}let i=lo;for(let j=lo;j<hi;j++)if(lt(j,hi,hi)){if(i!=j)sw(i,j,hi);i++}if(i!=hi)sw(i,hi,hi);d[i]=1;snap('pass',-1,-1,`pivot menetap di [${i}] · bagi [${lo}..${i-1}] dan [${i+1}..${hi}]`);qs(lo,i-1);qs(i+1,hi)};qs(0,n-1)}
+  d.fill(1);snap('end',-1,-1,`selesai · ${c} perbandingan · ${s} pertukaran`);return F}
+function mkLinear(tp){
+  const o=data.map(x=>x.id),F=[],n=data.length;let hit=-1;
+  F.push({o,k:'init',a:-1,b:-1,pv:-1,c:0,s:0,t:`mulai Linear Search · cari ${rp(tp)} di ${n} tiket`});
+  for(let i=0;i<n;i++){const ok=data[i].harga==tp;F.push({o,k:ok?'hit':'scan',a:i,b:-1,pv:-1,c:i+1,s:0,t:`[${i}] ${short(data[i].harga)} ${ok?'= target · DITEMUKAN':'≠ target'}`});if(ok){hit=i;break}}
+  if(hit<0)F.push({o,k:'end',a:-1,b:-1,pv:-1,c:n,s:0,t:`${n} tiket diperiksa semua · tidak ada yang cocok`});return F}
+function mkBinary(tp){
+  const a=[...data],n=a.length,o0=a.map(x=>x.id),F=[];
+  for(let i=1;i<n;i++){let j=i;while(j>0&&a[j].harga<a[j-1].harga){[a[j],a[j-1]]=[a[j-1],a[j]];j--}}   // syarat: data terurut
+  const o=a.map(x=>x.id);let lo=0,hi=n-1,c=0;
+  F.push({o:o0,k:'init',a:-1,b:-1,pv:-1,c:0,s:0,lo:0,hi:n-1,t:`mulai Binary Search · cari ${rp(tp)}`});
+  F.push({o,k:'bin',a:-1,b:-1,pv:-1,c:0,s:0,lo,hi,t:'data diurutkan dulu (syarat binary search)'});
+  while(lo<=hi){const mid=(lo+hi)>>1,h=a[mid].harga;c++;const ok=h==tp;
+    F.push({o,k:ok?'hit':'bin',a:mid,b:-1,pv:-1,c,s:0,lo,hi,t:`#${c} lo=${lo} hi=${hi} mid=${mid} · ${short(h)} ${ok?'= target · DITEMUKAN':h<tp?'< target, buang kiri':'> target, buang kanan'}`});
+    if(ok)return F;if(h<tp)lo=mid+1;else hi=mid-1}
+  F.push({o,k:'end',a:-1,b:-1,pv:-1,c,s:0,lo,hi,t:`rentang habis setelah ${c} langkah · tidak ditemukan`});return F}
+/* ---- kanvas ---- */
+const cv=$('cv'),x=cv.getContext('2d');let W=0,H=0;
+new ResizeObserver(()=>{const r=cv.getBoundingClientRect(),q=devicePixelRatio||1;W=r.width;H=r.height;cv.width=W*q;cv.height=H*q;x.setTransform(q,0,0,q,0,0)}).observe(cv);
+const cur=()=>frames[fi]||{o:data.map(t=>t.id),k:'idle',a:-1,b:-1,pv:-1,d:null,c:0,s:0};
+const isS=()=>['linear','binary'].includes($('mode').value);
+function draw(){
+  const f=cur(),n=f.o.length,bw=W/Math.max(n,1),padT=112,padB=58,hh=H-padT-padB,base=H-padB,g=Math.min(6,bw*.16);
+  x.clearRect(0,0,W,H);if(!n){requestAnimationFrame(draw);return}
+  const hs=data.map(t=>Math.log(t.harga)),mn=Math.min(...hs),mx=Math.max(...hs),sc=p=>.14+.86*(Math.log(p)-mn)/((mx-mn)||1);
+  x.strokeStyle='#223044';x.beginPath();x.moveTo(0,base+.5);x.lineTo(W,base+.5);x.stroke();
+  f.o.forEach((id,s)=>{const t=byId(id),tx=s*bw;bx[id]=bx[id]==null?tx:bx[id]+(tx-bx[id])*(RM?1:.26);
+    const bh=hh*sc(t.harga),X=bx[id]+g/2,Y=base-bh,w=bw-g;let col='#34465f',glow=0;
+    if(f.d&&f.d[s])col='#35d49a';
+    if(f.k=='cmp'&&(s==f.a||s==f.b))col='#6aa8ff';
+    if(f.k=='swap'&&(s==f.a||s==f.b))col='#ff6b57';
+    if(s==f.pv)col='#b58bff';
+    if(f.k=='scan'||f.k=='hit'){if(s<f.a)col='#222f42';if(s==f.a){col=f.k=='hit'?'#35d49a':'#ffb62e';glow=1}}
+    if(f.lo!=null&&f.k!='init'){if(s<f.lo||s>f.hi)col='#1b2635';else col='#3b5a86';if(s==f.a){col=f.k=='hit'?'#35d49a':'#ffb62e';glow=1}}
+    if(glow){x.shadowColor=col;x.shadowBlur=18}
+    x.fillStyle=col;x.beginPath();x.roundRect?x.roundRect(X,Y,w,bh,[5,5,0,0]):x.rect(X,Y,w,bh);x.fill();x.shadowBlur=0;
+    if(w>10&&bh>46){x.strokeStyle='rgba(11,16,23,.55)';x.lineWidth=1.5;x.setLineDash([3,4]);x.beginPath();x.moveTo(X+2,base-26);x.lineTo(X+w-2,base-26);x.stroke();x.setLineDash([]);x.lineWidth=1}   // garis sobekan tiket
+    x.textAlign='center';x.fillStyle='#8593a6';x.font='500 12px Barlow,sans-serif';
+    if(n<=26)x.fillText(s,X+w/2,base+16);
+    if(n<=22){x.fillStyle='#e8e4d8';x.font=`600 ${Math.min(13,w*.42)}px Barlow,sans-serif`;x.fillText(short(t.harga),X+w/2,Y-6)}
+    if(n<=14){x.fillStyle='#b58bff';x.font='500 11px Barlow,sans-serif';x.fillText('0x'+(0x7A00+id*128).toString(16).toUpperCase(),X+w/2,base+31)}
+  });
+  if(isS()&&tp0){const y=base-hh*sc(tp0);x.setLineDash([6,5]);x.strokeStyle='#ffb62e';x.beginPath();x.moveTo(0,y);x.lineTo(W,y);x.stroke();x.setLineDash([]);x.fillStyle='#ffb62e';x.textAlign='right';x.font='600 12px Barlow,sans-serif';x.fillText('dicari '+short(tp0),W-8,y-5)}
+  if(f.lo!=null&&f.k!='init'&&n<=40){x.textAlign='center';x.font='600 12px Barlow,sans-serif';[[f.lo,'lo','#6aa8ff'],[f.hi,'hi','#6aa8ff'],[f.a,'mid','#ffb62e']].forEach(([s,l,c])=>{if(s>=0&&s<n){x.fillStyle=c;x.fillText('▼ '+l,s*bw+bw/2,padT-34)}})}
+  requestAnimationFrame(draw)}
+requestAnimationFrame(draw);
+/* ---- papan log, hud, inspektur ---- */
+function show(){
+  const f=cur(),last=Math.max(frames.length-1,0);$('sc').max=last;$('sc').value=fi;
+  $('hud').innerHTML=`<div><b>${f.c}</b><span>${isS()?'diperiksa':'perbandingan'}</span></div>${isS()?'':`<div><b>${f.s}</b><span>pertukaran</span></div>`}<div><b>${frames.length?fi+1:0}/${frames.length}</b><span>langkah</span></div>`;
+  $('note').textContent=`${NAMA[$('mode').value]} · kompleksitas ${BIGO[$('mode').value]}`;
+  const from=Math.max(0,fi-10);$('rows').innerHTML=frames.slice(from,fi+1).map((q,i)=>`<div class="r ${q.k} ${from+i==fi?'now':''}"><i>${String(from+i+1).padStart(3,'0')}</i><span>${esc(q.t)}</span></div>`).join('')||'<div class="r"><span>Pilih metode lalu tekan Jalankan. Baris log muncul sinkron dengan animasi.</span></div>';
+  const card=(s,l)=>{if(s==null||s<0)return `<div class="st"><b>${l}</b><span>–</span></div>`;const t=byId(f.o[s]);return `<div class="st"><b>ptr[${s}] → 0x${(0x7A00+t.id*128).toString(16).toUpperCase()}</b><em>${esc(t.nama)}</em><span>${esc(t.asal)} → ${esc(t.tujuan)}</span><span>${rp(t.harga)} · ★${t.rating} · ${t.durasi} mnt</span></div>`};
+  $('insp').innerHTML=card(f.a,'*ptr[a]')+card(f.b,'*ptr[b]');
+  $('pl').textContent=playing?'Jeda':'Putar'}
+const iv=()=>Math.max(30,170/+$('sp').value);
+function tick(){if(fi>=frames.length-1){stop();return}fi++;show();timer=setTimeout(tick,iv())}
+function stop(){playing=false;clearTimeout(timer);show()}
+function play(){if(!frames.length)return;if(fi>=frames.length-1)fi=0;playing=true;show();timer=setTimeout(tick,iv())}
+function run(){stop();const m=$('mode').value,key=$('key').value,dir=+$('dir').value;bx={};
+  if(isS()){let tp=parseInt($('tp').value.replace(/\D/g,''),10)||0;if(!tp){tp=data[Math.floor(rnd()*data.length)].harga;$('tp').value=tp}tp0=tp;frames=m=='linear'?mkLinear(tp):mkBinary(tp)}
+  else{tp0=0;frames=mkSort(m,key,dir)}
+  fi=0;play()}
+const mode=()=>{const s=isS();document.querySelectorAll('.so').forEach(e=>e.hidden=s);document.querySelector('.se').hidden=!s;frames=[];fi=0;stop()};
+$('mode').onchange=mode;$('go').onclick=run;$('shuf').onclick=()=>{seed+=7;sample()};
+$('n').oninput=()=>{$('no').textContent=$('n').value;sample()};
+$('pl').onclick=()=>playing?stop():play();
+$('bn').onclick=()=>{stop();fi=Math.min(frames.length-1,fi+1);show()};$('bp').onclick=()=>{stop();fi=Math.max(0,fi-1);show()};
+$('b0').onclick=()=>{stop();fi=0;show()};$('b1').onclick=()=>{stop();fi=Math.max(0,frames.length-1);show()};
+$('sc').oninput=e=>{stop();fi=+e.target.value;show()};
+$('cp').onclick=()=>{const t=frames.map((q,i)=>`${String(i+1).padStart(3,'0')}  ${q.t}`).join('\n');navigator.clipboard&&navigator.clipboard.writeText(t).then(()=>{$('cp').textContent='Tersalin';setTimeout(()=>$('cp').textContent='Salin semua log',1400)})};
+cv.onclick=e=>{if(!isS())return;const f=cur(),s=Math.floor(e.offsetX/(W/f.o.length));if(f.o[s]!=null){$('tp').value=byId(f.o[s]).harga}};
+sample();mode();
+</script>
+</body>
+</html>

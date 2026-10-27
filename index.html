@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' file:; style-src 'self' file: 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' file: https://fonts.gstatic.com; img-src data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' file:; style-src 'self' file: 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' file: data:; base-uri 'none'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Pesanin — Tiket Perjalanan</title>
 <meta name="referrer" content="no-referrer">
@@ -14,10 +14,10 @@
 <body>
 <div class="w">
 <header><div class="brand">Pesanin<i>.</i></div>
-<div class="hdr-r"><nav class="nav"><button class="on" data-v="tiket">Tiket</button><button data-v="pesanan">Pesanan <em id="oc" hidden>0</em></button><button data-v="konsep">Konsep Data</button></nav><button class="hlog" id="fab" aria-label="Buka log tindakan">Log <span id="lc" hidden>0</span></button></div></header>
+<div class="hdr-r"><nav class="nav"><button class="on" data-v="tiket">Tiket</button><button data-v="pesanan">Pesanan <em id="oc" hidden>0</em></button><button data-v="simpan">Tersimpan <em id="fc" hidden>0</em></button></nav><a class="hlog" href="lab.html" style="text-decoration:none;color:inherit;display:inline-flex;align-items:center">Panggung</a><button class="hlog" id="fab" aria-label="Buka log tindakan">Log <span id="lc" hidden>0</span></button></div></header>
 
 <main id="tiket">
-<section class="hero"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><div class="flyw" aria-hidden="true"><svg viewBox="0 0 320 100" fill="none"><path d="M0 90 Q160 -50 320 70" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3 7"/></svg><div class="plane"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 3L3 10.5l7 2.5 2.5 7L21 3z"/></svg></div></div><svg class="bg" id="hbg" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round"></svg>
+<section class="hero"><svg class="bg" id="hbg" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round"></svg>
 <div style="position:relative"><small id="hk"></small><h1 id="h1"></h1><p class="sub" id="hs"></p></div><div class="stats" id="stats"></div></section>
 <div class="sf"><label><span id="la">Dari</span><input id="fa" maxlength="40" list="kota" placeholder="Kota asal"></label><label><span id="lb">Ke</span><input id="fb" maxlength="40" list="kota" placeholder="Tujuan atau lokasi"></label><label>Tanggal<input type="date" id="fd"></label><label>Jumlah<select id="fp"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label><button class="go" id="fs">Cari tiket</button></div><datalist id="kota"></datalist>
 <div class="cats" id="cats"></div>
@@ -30,7 +30,9 @@
 
 <main id="pesanan"><h1>Pesanan saya</h1><p class="sub">Semua tiket yang sudah kamu pesan.</p><div id="ol"></div></main>
 
-<main id="konsep">
+<main id="simpan"><h1>Tiket tersimpan</h1><p class="sub">Tiket yang kamu tandai ♥ untuk dipesan nanti.</p><div class="grid" id="sg"></div></main>
+
+<main id="konsep" hidden>
 <h1>Array, Struct, Pointer</h1>
 <p class="sub">Tiga konsep dasar yang menopang seluruh data di halaman ini.</p>
 <div class="k">
@@ -44,12 +46,12 @@
 <div class="box" style="grid-column:1/-1;order:3"><h2>Linked List</h2><p>Pesananmu disimpan sebagai rantai node. Setiap node menyimpan <code>next</code>, yaitu pointer ke node berikutnya.</p><div id="ll"></div></div>
 </div>
 </main>
-<footer>Pesanin · Proyek Struktur Data · Array, Struct, Pointer, Sorting, Searching · Data simulasi untuk tugas, bukan harga resmi</footer>
+<footer>Pesanin · Data simulasi untuk tugas, bukan harga resmi</footer>
 </div>
 
 
 <aside class="dr" id="dr"><div class="dh"><span id="lt">Log proses</span><div><button id="lx">Bersihkan</button><button id="lh">Tutup</button></div></div><details class="cfg"><summary id="cfgs">Atur metode</summary><div class="cfgb"><label>Metode pengurutan<select id="sa"><option value="bubble">Bubble Sort</option><option value="selection">Selection Sort</option><option value="insertion">Insertion Sort</option><option value="merge">Merge Sort</option><option value="quick">Quick Sort</option></select></label><label>Metode pencarian teks<select id="sm"><option value="linear">Linear Search</option><option value="binname">Binary Search (awalan nama)</option></select></label><button class="go ghost" id="bb">Bandingkan semua</button><label class="chk"><input type="checkbox" id="auto" checked> Buka log otomatis</label></div></details>
-<div id="vz" aria-hidden="true"><div class="vh"><span id="vs"></span><button id="vr">Ulang</button></div><div class="prog" id="prog"><i></i></div><div class="ctl" id="ctl"><button id="cb" title="Langkah mundur" aria-label="Langkah mundur">◀</button><button id="cpl" title="Jeda / putar" aria-label="Jeda atau putar">❚❚</button><button id="cf" title="Langkah maju" aria-label="Langkah maju">▶</button><input type="range" id="csl" min="0" max="0" value="0" aria-label="Posisi animasi"><select id="csp" aria-label="Kecepatan"><option value="0.5">Cepat</option><option value="1" selected>Normal</option><option value="6">Lambat</option><option value="20">Pelan</option></select><button id="ck" title="Tampilkan pseudocode" aria-label="Tampilkan pseudocode">{ }</button></div><div id="viz"></div><div id="code" aria-hidden="true"></div></div><div id="log" role="log" aria-live="polite"><div class="none">Belum ada proses. Coba urutkan atau cari tiket.</div></div></aside>
+<div id="vz" aria-hidden="true"><div class="vh"><span id="vs"></span><button id="vr">Ulang</button></div><div id="viz"></div></div><div id="log" role="log" aria-live="polite"><div class="none">Belum ada proses. Coba urutkan atau cari tiket.</div></div></aside>
 <div class="toast" id="toast"></div>
 <div class="ov" id="ov"><div class="md" id="md"></div></div>
 
